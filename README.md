@@ -99,6 +99,5 @@ The MVP runs, but it is set up for a laptop, not a household on the internet:
   and `DJANGO_DEBUG=false` before serving anything
   (see [`_docs/deployment.md`](_docs/deployment.md))
 - SQLite only; the spec asks for PostgreSQL in production ([#14](../../issues/14))
-- no automated tests — every rule was verified by hand ([#12](../../issues/12))
 - reminders need SMTP settings and a daily schedule — see
   [`_docs/deployment.md`](_docs/deployment.md)

@@ -11,7 +11,7 @@ Everything runs through `uv` — there is no activated virtualenv.
 - `uv sync` — install dependencies
 - `uv run python manage.py runserver` — dev server on :8000
 - `uv run python manage.py makemigrations chores && uv run python manage.py migrate` — after a model change
-- `uv run python manage.py test` — the suite (empty so far)
+- `uv run python manage.py test` — the suite
 - `uv run python manage.py generate_week` — rotate next week's routine chores
 
 ## Rules
