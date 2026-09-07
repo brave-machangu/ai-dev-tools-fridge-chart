@@ -1,0 +1,5 @@
+# Never line-ending-normalise these: the PDF is ASCII85 and looks like text to
+# git, but rewriting its newlines corrupts the file.
+*.pdf binary
+*.png binary
+*.jpg binary
