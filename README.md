@@ -27,20 +27,57 @@ parent-only and makes its primary output a piece of paper.
 | Backend | Django (Python) |
 | Database | SQLite (dev) / PostgreSQL (prod) via the Django ORM |
 | Frontend | Django templates (HTML/CSS), minimal JavaScript |
-| PDF | WeasyPrint or ReportLab |
+| PDF | WeasyPrint or ReportLab (not built yet) |
 
 ## Data model (preview)
 
 `Family`, `Profile` (parent/child), `Chore`, `ChoreAssignment`, `Reward`, `LedgerEntry`.
 
+## Getting started
+
+Everything runs through [uv](https://docs.astral.sh/uv/) — there is no activated virtualenv.
+
+```
+uv sync                                  # install dependencies
+uv run python manage.py migrate          # set up the database
+uv run python manage.py createsuperuser  # a parent who can reach /admin/
+uv run python manage.py runserver        # http://127.0.0.1:8000/
+```
+
+Create a family, a parent profile linked to your user, and the children in
+`/admin/`, then generate a week of chores:
+
+```
+uv run python manage.py generate_week
+```
+
 ## Repository layout
 
 ```
-_docs/plan.md    Full project scope and plan
-.gitignore
-README.md
+config/            Django project: settings, root urls, wsgi/asgi
+chores/            the app: models, views, templates, admin
+  management/commands/generate_week.py
+_docs/plan.md      full project scope
+_docs/AGENTS.md    guidance for coding agents
+backlog.md         numbered tasks, mirrored as GitHub issues
 ```
 
 ## Status
 
-Planning stage — see [`_docs/plan.md`](_docs/plan.md) for the full scope. No application code yet.
+Working. Chores rotate weekly, a parent approves them, points accrue, bounties
+get claimed, and rewards get spent — the whole loop from
+[`_docs/plan.md`](_docs/plan.md).
+
+| Built | |
+| --- | --- |
+| Family and profiles | parents sign in, children never do |
+| Chores and rewards | routine and bounty chores, a custom rewards store |
+| Weekly rotation | `generate_week` rotates routine chores between children |
+| Dashboard | the week grouped by child, with parent approval |
+| Balances and ledger | per-child totals and a full audit trail |
+| Bounty board | post a bounty, claim it, approve it |
+| Reward redemption | spend points, never below zero |
+
+Still open: the printable weekly PDF chart and the Friday/Sunday reminders.
+Progress is tracked as [GitHub issues](../../issues), one per task in
+[`backlog.md`](backlog.md).

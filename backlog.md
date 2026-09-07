@@ -10,6 +10,9 @@ safe to stop after Task 9.
 
 Run every `manage.py` command through uv, e.g. `uv run python manage.py check`.
 
+Each task is mirrored as a [GitHub issue](../../issues) with the same number, so
+progress lives there rather than being duplicated here.
+
 ---
 
 ## Task 1 — Family and Profile models

@@ -22,3 +22,6 @@ Everything runs through `uv` — there is no activated virtualenv.
   children have no login and no child-facing UI.
 - A task is done when its **Done when:** check in `backlog.md` has actually been
   run. Show the output; do not conclude it works from reading the code.
+- Keep this file short. Every session pays for it, so a rule earns its place
+  only if it changes what an agent does whatever the task is, and cannot be
+  seen from the code.
