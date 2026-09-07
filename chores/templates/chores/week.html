@@ -8,6 +8,8 @@
     <a href="?week={{ previous_week|date:'Y-m-d' }}">&larr; previous week</a>
     &middot;
     <a href="?week={{ next_week|date:'Y-m-d' }}">next week &rarr;</a>
+    &middot;
+    <a href="{% url 'chores:week_pdf' %}?week={{ week_start|date:'Y-m-d' }}">print the fridge chart</a>
   </p>
 
   {% for row in rows %}

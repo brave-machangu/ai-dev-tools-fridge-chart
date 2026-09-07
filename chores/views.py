@@ -2,11 +2,13 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from .forms import BountyForm
+from .pdf import build_week_chart
 from .models import Chore, ChoreAssignment, Profile, Reward, monday_of
 
 
@@ -50,15 +52,8 @@ def home(request):
     })
 
 
-@login_required
-def week(request):
-    """This week's chores, grouped by child, with an Approve button each."""
-    profile = parent_profile(request.user)
-    if profile is None:
-        return redirect('chores:home')
-
-    family = profile.family
-    week_start = requested_week(request)
+def week_rows(family, week_start):
+    """One entry per child: their chores for the week, and their balance."""
     assignments = (
         ChoreAssignment.objects
         .filter(chore__family=family, week_start=week_start)
@@ -69,7 +64,7 @@ def week(request):
     for assignment in assignments:
         by_child.setdefault(assignment.child_id, []).append(assignment)
 
-    rows = [
+    return [
         {
             'child': child,
             'assignments': by_child.get(child.pk, []),
@@ -77,6 +72,18 @@ def week(request):
         }
         for child in family.children
     ]
+
+
+@login_required
+def week(request):
+    """This week's chores, grouped by child, with an Approve button each."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    family = profile.family
+    week_start = requested_week(request)
+    rows = week_rows(family, week_start)
 
     return render(request, 'chores/week.html', {
         'family': family,
@@ -290,3 +297,26 @@ def redeem_reward(request, pk):
         )
 
     return redirect('chores:rewards')
+
+
+@login_required
+def week_pdf(request):
+    """The fridge chart: this week as a one-page PDF, ready to print."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    family = profile.family
+    week_start = requested_week(request)
+    pdf = build_week_chart(
+        family,
+        week_start,
+        week_rows(family, week_start),
+        family.chores.filter(kind=Chore.Kind.BOUNTY),
+    )
+
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = (
+        f'attachment; filename="chores-{week_start}.pdf"'
+    )
+    return response
