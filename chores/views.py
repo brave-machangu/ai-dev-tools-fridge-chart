@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from .forms import BountyForm
-from .models import Chore, ChoreAssignment, Profile, monday_of
+from .models import Chore, ChoreAssignment, Profile, Reward, monday_of
 
 
 def parent_profile(user):
@@ -243,3 +243,50 @@ def claim_bounty(request, pk):
         )
 
     return redirect('chores:bounties')
+
+
+@login_required
+def rewards(request):
+    """The rewards store: what points can buy, and who can afford it."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    family = profile.family
+    return render(request, 'chores/rewards.html', {
+        'family': family,
+        'rewards': family.rewards.all(),
+        'children': family.children,
+    })
+
+
+@login_required
+@require_POST
+def redeem_reward(request, pk):
+    """Spend a child's points on a reward, unless they cannot afford it."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    reward = get_object_or_404(Reward, pk=pk, family=profile.family)
+    child = get_object_or_404(
+        Profile,
+        pk=request.POST.get('child'),
+        family=profile.family,
+        role=Profile.Role.CHILD,
+    )
+
+    if child.redeem(reward):
+        messages.success(
+            request,
+            f'{child.display_name} redeemed {reward.name} for {reward.cost} points. '
+            f'Balance is now {child.balance}.',
+        )
+    else:
+        messages.error(
+            request,
+            f'{child.display_name} has {child.balance} points and '
+            f'{reward.name} costs {reward.cost}. Nothing was deducted.',
+        )
+
+    return redirect('chores:rewards')

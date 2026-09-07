@@ -95,6 +95,28 @@ class Profile(models.Model):
         total = self.ledger_entries.aggregate(total=Sum('points'))['total']
         return total or 0
 
+    def redeem(self, reward):
+        """Spend points on a reward.
+
+        Returns True once the points are deducted, or False if the child cannot
+        afford it -- balances never go negative. The check and the deduction
+        share a transaction so two redemptions cannot both pass on the same
+        points.
+        """
+        with transaction.atomic():
+            child = Profile.objects.select_for_update().get(pk=self.pk)
+            if child.balance < reward.cost:
+                return False
+
+            LedgerEntry.objects.create(
+                child=child,
+                points=-reward.cost,
+                reason=LedgerEntry.Reason.REWARD_REDEEMED,
+                description=reward.name,
+                reward=reward,
+            )
+        return True
+
 
 class Chore(models.Model):
     """A task a child can be given.

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Rewards{% endblock %}
+
+{% block content %}
+  <h1>Rewards</h1>
+  <p class="muted">
+    {% for child in children %}
+      {{ child.display_name }}: {{ child.balance }} pts{% if not forloop.last %} &middot; {% endif %}
+    {% endfor %}
+  </p>
+
+  <table>
+    {% for reward in rewards %}
+      <tr>
+        <td>{{ reward.name }}</td>
+        <td>{{ reward.cost }} pts</td>
+        <td>
+          <form method="post" action="{% url 'chores:redeem_reward' reward.pk %}">
+            {% csrf_token %}
+            <select name="child">
+              {% for child in children %}
+                <option value="{{ child.pk }}">
+                  {{ child.display_name }} ({{ child.balance }})
+                </option>
+              {% endfor %}
+            </select>
+            <button type="submit">Redeem</button>
+          </form>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td class="muted">No rewards defined yet.</td></tr>
+    {% endfor %}
+  </table>
+{% endblock %}
