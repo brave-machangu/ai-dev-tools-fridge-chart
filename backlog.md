@@ -11,7 +11,9 @@ safe to stop after Task 9.
 Run every `manage.py` command through uv, e.g. `uv run python manage.py check`.
 
 Each task is mirrored as a [GitHub issue](../../issues) with the same number, so
-progress lives there rather than being duplicated here.
+progress lives there rather than being duplicated here. All eleven are done and
+labelled `MVP`; work they left behind is filed separately as `post-MVP` issues,
+summarised in [`pm.md`](pm.md).
 
 ---
 

@@ -82,3 +82,21 @@ get claimed, and rewards get spent — the whole loop from
 
 All eleven tasks in [`backlog.md`](backlog.md) are done and their
 [GitHub issues](../../issues) closed.
+
+## How the work is tracked
+
+[`_docs/plan.md`](_docs/plan.md) is the spec, [`backlog.md`](backlog.md) breaks
+it into numbered tasks, and each task is a GitHub issue with the same number.
+Issues are labelled `MVP` or `post-MVP`; [`pm.md`](pm.md) says what is in each
+and why. [`process.md`](process.md) describes how a task goes from spec to
+commit, and [`task-template.md`](task-template.md) is the shape an issue takes.
+
+## Not ready for production
+
+The MVP runs, but it is set up for a laptop, not a household on the internet:
+
+- the development `SECRET_KEY` is committed and `DEBUG = True` ([#15](../../issues/15))
+- SQLite only; the spec asks for PostgreSQL in production ([#14](../../issues/14))
+- no automated tests — every rule was verified by hand ([#12](../../issues/12))
+- reminders print to the console and nothing schedules them ([#13](../../issues/13))
+- a parent needs a Django superuser to set up their family ([#17](../../issues/17))
