@@ -1,0 +1,19 @@
+[project]
+name = "ai-dev-tools-homework"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Matipa Brave Machangu", email = "325657687+brave-machangu@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "django>=6.1.1",
+]
+
+[project.scripts]
+ai-dev-tools-homework = "ai_dev_tools_homework:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"
