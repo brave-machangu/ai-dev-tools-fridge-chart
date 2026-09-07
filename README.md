@@ -95,8 +95,11 @@ commit, and [`task-template.md`](_docs/team/task-template.md) is the shape an is
 
 The MVP runs, but it is set up for a laptop, not a household on the internet:
 
-- the development `SECRET_KEY` is committed and `DEBUG = True` ([#15](../../issues/15))
+- the fallback `SECRET_KEY` in `settings.py` is public; set `DJANGO_SECRET_KEY`
+  and `DJANGO_DEBUG=false` before serving anything
+  (see [`_docs/deployment.md`](_docs/deployment.md))
 - SQLite only; the spec asks for PostgreSQL in production ([#14](../../issues/14))
 - no automated tests — every rule was verified by hand ([#12](../../issues/12))
-- reminders print to the console and nothing schedules them ([#13](../../issues/13))
+- reminders need SMTP settings and a daily schedule — see
+  [`_docs/deployment.md`](_docs/deployment.md)
 - a parent needs a Django superuser to set up their family ([#17](../../issues/17))
