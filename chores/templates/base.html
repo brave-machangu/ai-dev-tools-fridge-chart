@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Chore &amp; Reward Manager{% endblock %}</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0;
+      font: 16px/1.5 system-ui, sans-serif;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #8884;
+    }
+    header a { text-decoration: none; font-weight: 600; }
+    main { padding: 1.5rem; max-width: 60rem; }
+    h1 { margin-top: 0; }
+    .muted { opacity: 0.7; }
+    button { font: inherit; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{% url 'chores:home' %}">Chore &amp; Reward Manager</a>
+    {% if user.is_authenticated %}
+      <span class="muted">
+        Signed in as {{ user.get_username }}
+        <form action="{% url 'logout' %}" method="post" style="display:inline">
+          {% csrf_token %}
+          <button type="submit">Log out</button>
+        </form>
+      </span>
+    {% endif %}
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
