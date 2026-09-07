@@ -6,6 +6,7 @@
   {% if family %}
     <h1>{{ family.name }}</h1>
     <p class="muted">Managed by {{ profile.display_name }}.</p>
+    <p><a href="{% url 'chores:week' %}">Review this week's chores</a></p>
 
     <h2>Parents</h2>
     <ul>

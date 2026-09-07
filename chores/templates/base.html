@@ -24,11 +24,19 @@
     h1 { margin-top: 0; }
     .muted { opacity: 0.7; }
     button { font: inherit; }
+    table { border-collapse: collapse; }
+    td { padding: 0.25rem 1rem 0.25rem 0; }
+    .messages { list-style: none; padding: 0; }
+    .messages li { padding: 0.5rem 0.75rem; border-left: 3px solid; margin-bottom: 0.5rem; }
+    .messages .success { border-color: #2a7; }
+    .messages .info { border-color: #47c; }
+    .messages .error { border-color: #c33; }
   </style>
 </head>
 <body>
   <header>
     <a href="{% url 'chores:home' %}">Chore &amp; Reward Manager</a>
+    <nav><a href="{% url 'chores:week' %}">This week</a></nav>
     {% if user.is_authenticated %}
       <span class="muted">
         Signed in as {{ user.get_username }}
@@ -40,6 +48,13 @@
     {% endif %}
   </header>
   <main>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 </body>

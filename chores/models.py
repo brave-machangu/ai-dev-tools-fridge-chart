@@ -1,8 +1,9 @@
 import datetime
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Sum
+from django.utils import timezone
 
 
 def monday_of(day):
@@ -222,6 +223,41 @@ class ChoreAssignment(models.Model):
     @property
     def is_approved(self):
         return self.status == self.Status.APPROVED
+
+    def approve(self, by=None):
+        """Approve the chore and credit its points to the child.
+
+        Returns True if this call is what credited the points, False if the
+        assignment was already approved. Approving twice must never pay twice,
+        so the check and the credit happen together in one transaction -- and
+        the one-to-one link from the ledger entry back to the assignment means
+        the database refuses a second credit even if two requests race.
+        """
+        with transaction.atomic():
+            locked = (
+                ChoreAssignment.objects
+                .select_for_update()
+                .select_related('chore')
+                .get(pk=self.pk)
+            )
+            if locked.status == self.Status.APPROVED:
+                return False
+
+            locked.status = self.Status.APPROVED
+            locked.approved_at = timezone.now()
+            locked.approved_by = by
+            locked.save(update_fields=['status', 'approved_at', 'approved_by'])
+
+            LedgerEntry.objects.create(
+                child_id=locked.child_id,
+                points=locked.chore.points,
+                reason=LedgerEntry.Reason.CHORE_APPROVED,
+                description=locked.chore.title,
+                assignment=locked,
+            )
+
+        self.refresh_from_db()
+        return True
 
 
 class LedgerEntry(models.Model):

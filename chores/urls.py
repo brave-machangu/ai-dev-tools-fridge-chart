@@ -6,4 +6,10 @@ app_name = 'chores'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('week/', views.week, name='week'),
+    path(
+        'assignments/<int:pk>/approve/',
+        views.approve_assignment,
+        name='approve_assignment',
+    ),
 ]
