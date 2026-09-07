@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Balances{% endblock %}
+
+{% block content %}
+  <h1>Point balances</h1>
+  <p class="muted">{{ family.name }}</p>
+
+  <table>
+    <tr>
+      <th style="text-align:left">Child</th>
+      <th style="text-align:right">Points</th>
+      <th></th>
+    </tr>
+    {% for row in rows %}
+      <tr>
+        <td>{{ row.child.display_name }}</td>
+        <td style="text-align:right">{{ row.balance }}</td>
+        <td>
+          <a href="{% url 'chores:child_ledger' row.child.pk %}">
+            ledger ({{ row.entry_count }})
+          </a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td class="muted">This family has no children yet.</td></tr>
+    {% endfor %}
+  </table>
+{% endblock %}

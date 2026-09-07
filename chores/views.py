@@ -115,3 +115,52 @@ def approve_assignment(request, pk):
 
     url = reverse('chores:week')
     return redirect(f'{url}?week={assignment.week_start.isoformat()}')
+
+
+@login_required
+def balances(request):
+    """Every child in the family with the points they have right now."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    family = profile.family
+    rows = [
+        {
+            'child': child,
+            'balance': child.balance,
+            'entry_count': child.ledger_entries.count(),
+        }
+        for child in family.children
+    ]
+
+    return render(request, 'chores/balances.html', {
+        'family': family,
+        'rows': rows,
+    })
+
+
+@login_required
+def child_ledger(request, pk):
+    """One child's full history of points earned and spent."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    child = get_object_or_404(
+        Profile,
+        pk=pk,
+        family=profile.family,
+        role=Profile.Role.CHILD,
+    )
+    entries = (
+        child.ledger_entries
+        .select_related('assignment__chore', 'reward')
+        .order_by('created_at')
+    )
+
+    return render(request, 'chores/ledger.html', {
+        'child': child,
+        'entries': entries,
+        'balance': child.balance,
+    })

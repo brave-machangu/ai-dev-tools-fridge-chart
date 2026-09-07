@@ -12,4 +12,6 @@ urlpatterns = [
         views.approve_assignment,
         name='approve_assignment',
     ),
+    path('balances/', views.balances, name='balances'),
+    path('children/<int:pk>/ledger/', views.child_ledger, name='child_ledger'),
 ]

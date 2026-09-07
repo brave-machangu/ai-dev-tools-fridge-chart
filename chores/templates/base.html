@@ -36,7 +36,11 @@
 <body>
   <header>
     <a href="{% url 'chores:home' %}">Chore &amp; Reward Manager</a>
-    <nav><a href="{% url 'chores:week' %}">This week</a></nav>
+    <nav>
+      <a href="{% url 'chores:week' %}">This week</a>
+      &middot;
+      <a href="{% url 'chores:balances' %}">Balances</a>
+    </nav>
     {% if user.is_authenticated %}
       <span class="muted">
         Signed in as {{ user.get_username }}

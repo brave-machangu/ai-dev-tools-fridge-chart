@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ child.display_name }}'s ledger{% endblock %}
+
+{% block content %}
+  <h1>{{ child.display_name }}</h1>
+  <p class="muted">
+    Balance: {{ balance }} points &middot;
+    <a href="{% url 'chores:balances' %}">back to balances</a>
+  </p>
+
+  <table>
+    <tr>
+      <th style="text-align:left">When</th>
+      <th style="text-align:right">Points</th>
+      <th style="text-align:left">Reason</th>
+      <th style="text-align:left">What</th>
+    </tr>
+    {% for entry in entries %}
+      <tr>
+        <td>{{ entry.created_at|date:'j M Y' }}</td>
+        <td style="text-align:right">{{ entry.points }}</td>
+        <td>{{ entry.get_reason_display }}</td>
+        <td>{{ entry.description }}</td>
+      </tr>
+    {% empty %}
+      <tr><td class="muted">Nothing earned or spent yet.</td></tr>
+    {% endfor %}
+    <tr>
+      <td><strong>Total</strong></td>
+      <td style="text-align:right"><strong>{{ balance }}</strong></td>
+      <td colspan="2"></td>
+    </tr>
+  </table>
+{% endblock %}
