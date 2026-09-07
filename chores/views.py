@@ -52,6 +52,17 @@ def home(request):
     })
 
 
+def open_bounties(family):
+    """Bounties still up for grabs: posted, and not yet approved for anyone."""
+    return [
+        bounty
+        for bounty in family.chores.filter(kind=Chore.Kind.BOUNTY)
+        if not bounty.assignments.filter(
+            status=ChoreAssignment.Status.APPROVED
+        ).exists()
+    ]
+
+
 def week_rows(family, week_start):
     """One entry per child: their chores for the week, and their balance."""
     assignments = (
@@ -193,15 +204,21 @@ def bounties(request):
     else:
         form = BountyForm(family=family)
 
-    board = [
-        {'bounty': bounty, 'assignment': bounty.assignments.first()}
-        for bounty in family.chores.filter(kind=Chore.Kind.BOUNTY)
-    ]
+    open_board, finished = [], []
+    for bounty in family.chores.filter(kind=Chore.Kind.BOUNTY):
+        assignment = bounty.assignments.order_by('-week_start').first()
+        entry = {'bounty': bounty, 'assignment': assignment}
+        # A bounty leaves the board once its work has been approved and paid.
+        if assignment and assignment.is_approved:
+            finished.append(entry)
+        else:
+            open_board.append(entry)
 
     return render(request, 'chores/bounties.html', {
         'family': family,
         'form': form,
-        'board': board,
+        'board': open_board,
+        'finished': finished,
         'children': family.children,
     })
 
@@ -312,7 +329,7 @@ def week_pdf(request):
         family,
         week_start,
         week_rows(family, week_start),
-        family.chores.filter(kind=Chore.Kind.BOUNTY),
+        open_bounties(family),
     )
 
     response = HttpResponse(pdf, content_type='application/pdf')

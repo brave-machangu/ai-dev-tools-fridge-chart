@@ -37,9 +37,25 @@
         </td>
       </tr>
     {% empty %}
-      <tr><td class="muted">No bounties posted yet.</td></tr>
+      <tr><td class="muted">No bounties up for grabs.</td></tr>
     {% endfor %}
   </table>
+
+  {% if finished %}
+    <h2>Finished</h2>
+    <table>
+      {% for item in finished %}
+        <tr>
+          <td class="muted">{{ item.bounty.title }}</td>
+          <td class="muted">{{ item.bounty.points }} pts</td>
+          <td class="muted">
+            done by {{ item.assignment.child.display_name }},
+            {{ item.assignment.approved_at|date:'j M Y' }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
 
   <h2>Post a bounty</h2>
   <form method="post">
