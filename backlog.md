@@ -149,7 +149,7 @@ spec: a Friday nudge to review and approve the week's chores, and a Sunday nudge
 to generate and print next week's chart. Use Django's email backend and send only
 to parent accounts — no daily notifications.
 
-**Done when:** running the command with
-`EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend` prints the correct
-reminder for a simulated Friday and the other one for a simulated Sunday, and
-prints nothing on other days.
+**Done when:** running the command prints the correct reminder for a simulated
+Friday and the other one for a simulated Sunday, and prints nothing on other
+days. Django 6.1 configures mail through `MAILERS`, which `startproject`
+already points at the console backend, so no extra setup is needed.
