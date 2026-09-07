@@ -69,8 +69,8 @@ Requires **Python 3.14** and [**uv**](https://docs.astral.sh/uv/). No database
 server is needed — development runs on SQLite.
 
 ```bash
-git clone https://github.com/brave-machangu/ai-dev-tools-homework.git
-cd ai-dev-tools-homework
+git clone https://github.com/brave-machangu/ai-dev-tools-fridge-chart.git
+cd ai-dev-tools-fridge-chart
 uv sync                                  # install dependencies
 uv run python manage.py migrate          # create the database
 uv run python manage.py createsuperuser  # your first parent account

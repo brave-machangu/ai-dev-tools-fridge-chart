@@ -1,5 +1,5 @@
 [project]
-name = "ai-dev-tools-homework"
+name = "ai-dev-tools-fridge-chart"
 version = "0.1.0"
 description = "Family chore and reward manager"
 readme = "README.md"
