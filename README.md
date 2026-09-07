@@ -40,7 +40,7 @@ Everything runs through [uv](https://docs.astral.sh/uv/) — there is no activat
 ```
 uv sync                                  # install dependencies
 uv run python manage.py migrate          # set up the database
-uv run python manage.py createsuperuser  # a parent who can reach /admin/
+uv run python manage.py createsuperuser  # your first parent account
 uv run python manage.py runserver        # http://127.0.0.1:8000/
 ```
 
@@ -51,15 +51,23 @@ recurring chores and the rewards. Then generate a week of chores:
 uv run python manage.py generate_week
 ```
 
+Run the tests with `uv run python manage.py test`. To run this for a real
+household rather than on a laptop, see [`_docs/deployment.md`](_docs/deployment.md).
+
 ## Repository layout
 
 ```
-config/            Django project: settings, root urls, wsgi/asgi
-chores/            the app: models, views, templates, admin
-  management/commands/generate_week.py
-_docs/plan.md      full project scope
-_docs/AGENTS.md    guidance for coding agents
-backlog.md         numbered tasks, mirrored as GitHub issues
+config/               Django project: settings, root urls, wsgi/asgi
+chores/               the app: models, views, forms, templates, admin
+  tests.py            the suite
+  management/commands/
+    generate_week.py  rotate next week's routine chores
+    send_reminders.py the Friday and Sunday nudges
+_docs/plan.md         full project scope
+_docs/deployment.md   environment variables, PostgreSQL, scheduling
+_docs/AGENTS.md       guidance for coding agents
+_docs/team/           how this project is run: scope, process, roles
+backlog.md            numbered tasks, mirrored as GitHub issues
 ```
 
 ## Status
@@ -79,9 +87,12 @@ get claimed, and rewards get spent — the whole loop from
 | Reward redemption | spend points, never below zero |
 | Fridge chart | the week as a one-page PDF, ready to print |
 | Reminders | Friday to approve, Sunday to print; silent otherwise |
+| Setup screens | a parent creates their family without the Django admin |
+| Tests | 26 covering approval, redemption, rotation and access |
 
-All eleven tasks in [`backlog.md`](backlog.md) are done and their
-[GitHub issues](../../issues) closed.
+All eleven tasks in [`backlog.md`](backlog.md) are done, and six of the seven
+follow-ups since. The one still open is PostgreSQL
+([#14](../../issues/14)).
 
 ## How the work is tracked
 
@@ -98,6 +109,7 @@ The MVP runs, but it is set up for a laptop, not a household on the internet:
 - the fallback `SECRET_KEY` in `settings.py` is public; set `DJANGO_SECRET_KEY`
   and `DJANGO_DEBUG=false` before serving anything
   (see [`_docs/deployment.md`](_docs/deployment.md))
-- SQLite only; the spec asks for PostgreSQL in production ([#14](../../issues/14))
+- SQLite by default; PostgreSQL is configured but has never been migrated
+  against a real server ([#14](../../issues/14))
 - reminders need SMTP settings and a daily schedule — see
   [`_docs/deployment.md`](_docs/deployment.md)

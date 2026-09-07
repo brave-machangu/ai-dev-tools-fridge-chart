@@ -28,6 +28,11 @@ failure would look identical, find a second check that distinguishes them:
 - A page that renders is not a page that works. Approving a chore twice returns
   `302` either way; only the balance and the ledger row count show whether it
   paid twice.
+- A passing test suite proves nothing until you have seen it fail. Break the
+  rule the test covers, watch it go red, then put the rule back.
+- Check you are talking to the code you just wrote. A stale `runserver` holding
+  the port will happily serve the old behaviour and look like a bug in the new
+  work.
 
 ## Grooming
 

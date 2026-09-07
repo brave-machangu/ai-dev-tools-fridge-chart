@@ -16,17 +16,17 @@ spent, and the week prints as a chart for the fridge.
 | #8 #9 | Bounty board and reward redemption |
 | #10 #11 | The printable fridge chart and the Friday/Sunday reminders |
 
-## Deferred — issues #12–#18
+## After the MVP — issues #12–#18, six of seven done
 
-| Issue | Why it waits |
+| Issue | State |
 | --- | --- |
-| #12 Automated tests | Every rule has been verified by hand; nothing guards them yet |
-| #13 Deliver the reminders | The command works; nothing schedules it and mail goes to the console |
-| #14 PostgreSQL | The spec asks for it in production. SQLite runs the MVP, so this is the one line of the spec the MVP knowingly ships short |
-| #15 Harden settings | Development `SECRET_KEY`, `DEBUG = True`, empty `ALLOWED_HOSTS` — fine locally, not beyond |
-| #16 Retire finished bounties | The board only grows; cosmetic until a family has used it for a while |
-| #17 Set up a family without the admin | A parent needs a superuser today. Blocks real users, not the demo |
-| #18 Remove the uv-init leftovers | Repository tidiness |
+| #12 Automated tests | Done. 26 tests over approval, redemption, rotation, constraints and access |
+| #13 Deliver the reminders | Done. SMTP from the environment, scheduling documented in [`../deployment.md`](../deployment.md) |
+| #15 Harden settings | Done. Key, debug and hosts from the environment; `check --deploy` is clean |
+| #16 Retire finished bounties | Done. An approved bounty leaves the board and the printed chart |
+| #17 Set up a family without the admin | Done. `/setup/` takes a new parent from nothing to a printable week |
+| #18 Remove the uv-init leftovers | Done. The project is no longer built as a package |
+| **#14 PostgreSQL** | **Open.** The engine switches on `POSTGRES_DB` and the driver is an optional extra, but `migrate` has never run against a real server, so the constraints are proven on SQLite only |
 
 ## What the MVP deliberately does not do
 

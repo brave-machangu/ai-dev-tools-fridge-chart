@@ -16,6 +16,8 @@ The scope of the work is [`pm.md`](pm.md); the route it travels is
   ledger entry moves points — each is a constraint, so no future view can
   quietly break it.
 - **Ask before adding a dependency.** They go in `pyproject.toml` via `uv add`.
+- **Cover a rule with a test when you add it**, and prove the test fails
+  without the rule.
 - **Build only what the issue describes.** Something the issue implies but does
   not cover becomes its own issue, recorded under **Not in this issue** on the
   original.
@@ -24,8 +26,8 @@ The scope of the work is [`pm.md`](pm.md); the route it travels is
 
 1. The issue's **Done when** check has been run, and the real output is in the
    conversation or on the issue.
-2. `uv run python manage.py check` passes, and migrations are generated and
-   applied if models changed.
+2. `uv run python manage.py check` passes, `uv run python manage.py test` is
+   green, and migrations are generated and applied if models changed.
 3. The change is committed and pushed, and the issue closed.
 
 ## Judgement calls
