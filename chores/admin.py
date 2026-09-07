@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Chore, Family, Profile, Reward
+from .models import Chore, ChoreAssignment, Family, LedgerEntry, Profile, Reward
 
 
 class ProfileInline(admin.TabularInline):
@@ -35,3 +35,17 @@ class RewardAdmin(admin.ModelAdmin):
     list_display = ['name', 'cost', 'family']
     list_filter = ['family']
     search_fields = ['name']
+
+
+@admin.register(ChoreAssignment)
+class ChoreAssignmentAdmin(admin.ModelAdmin):
+    list_display = ['chore', 'child', 'week_start', 'status', 'approved_at']
+    list_filter = ['status', 'week_start', 'child']
+    date_hierarchy = 'week_start'
+
+
+@admin.register(LedgerEntry)
+class LedgerEntryAdmin(admin.ModelAdmin):
+    list_display = ['child', 'points', 'reason', 'description', 'created_at']
+    list_filter = ['reason', 'child']
+    readonly_fields = ['created_at']

@@ -1,5 +1,17 @@
+import datetime
+
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
+
+
+def monday_of(day):
+    """The Monday that starts the week containing ``day``.
+
+    The week resets cleanly every Monday, so a week is identified everywhere by
+    the date of its Monday.
+    """
+    return day - datetime.timedelta(days=day.weekday())
 
 
 class Family(models.Model):
@@ -76,6 +88,12 @@ class Profile(models.Model):
     def is_child(self):
         return self.role == self.Role.CHILD
 
+    @property
+    def balance(self):
+        """Current point balance: everything earned, less everything spent."""
+        total = self.ledger_entries.aggregate(total=Sum('points'))['total']
+        return total or 0
+
 
 class Chore(models.Model):
     """A task a child can be given.
@@ -148,3 +166,111 @@ class Reward(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.cost} pts)'
+
+
+class ChoreAssignment(models.Model):
+    """One chore handed to one child for one week.
+
+    Approval is deliberate: an assignment starts PENDING and stays that way
+    until a parent approves it, which is when points are credited. Nothing
+    rolls over -- a pending assignment from last week simply stays pending.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        APPROVED = 'APPROVED', 'Approved'
+
+    chore = models.ForeignKey(
+        Chore,
+        on_delete=models.CASCADE,
+        related_name='assignments',
+    )
+    child = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='assignments',
+        limit_choices_to={'role': Profile.Role.CHILD},
+    )
+    week_start = models.DateField(help_text='The Monday the week starts on.')
+    status = models.CharField(
+        max_length=8,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(
+        Profile,
+        on_delete=models.SET_NULL,
+        related_name='approvals',
+        null=True,
+        blank=True,
+        limit_choices_to={'role': Profile.Role.PARENT},
+    )
+
+    class Meta:
+        ordering = ['-week_start', 'child', 'chore']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['chore', 'week_start'],
+                name='one_holder_per_chore_per_week',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.chore.title} -> {self.child.display_name} (week of {self.week_start})'
+
+    @property
+    def is_approved(self):
+        return self.status == self.Status.APPROVED
+
+
+class LedgerEntry(models.Model):
+    """A signed point movement for one child, kept for auditing.
+
+    Positive points are earned by having a chore approved; negative points are
+    spent redeeming a reward.
+    """
+
+    class Reason(models.TextChoices):
+        CHORE_APPROVED = 'CHORE', 'Chore approved'
+        REWARD_REDEEMED = 'REWARD', 'Reward redeemed'
+
+    child = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='ledger_entries',
+        limit_choices_to={'role': Profile.Role.CHILD},
+    )
+    points = models.IntegerField(help_text='Positive to earn, negative to spend.')
+    reason = models.CharField(max_length=6, choices=Reason.choices)
+    description = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # What the entry came from, so a credit or a redemption can be traced back.
+    assignment = models.OneToOneField(
+        ChoreAssignment,
+        on_delete=models.SET_NULL,
+        related_name='ledger_entry',
+        null=True,
+        blank=True,
+    )
+    reward = models.ForeignKey(
+        Reward,
+        on_delete=models.SET_NULL,
+        related_name='redemptions',
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'ledger entries'
+        constraints = [
+            models.CheckConstraint(
+                condition=~models.Q(points=0),
+                name='ledger_entry_moves_points',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.child.display_name}: {self.points:+d} pts ({self.get_reason_display()})'
