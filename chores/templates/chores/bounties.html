@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Bounty board{% endblock %}
+
+{% block content %}
+  <h1>Bounty board</h1>
+  <p class="muted">One-off tasks a child can claim. {{ family.name }}.</p>
+
+  <table>
+    {% for item in board %}
+      <tr>
+        <td>{{ item.bounty.title }}</td>
+        <td>{{ item.bounty.points }} pts</td>
+        <td>
+          {% if item.assignment %}
+            {% if item.assignment.is_approved %}
+              <span class="muted">
+                done by {{ item.assignment.child.display_name }}
+              </span>
+            {% else %}
+              <span class="muted">
+                claimed by {{ item.assignment.child.display_name }} &mdash;
+              </span>
+              <a href="{% url 'chores:week' %}?week={{ item.assignment.week_start|date:'Y-m-d' }}">approve it</a>
+            {% endif %}
+          {% else %}
+            <form method="post" action="{% url 'chores:claim_bounty' item.bounty.pk %}">
+              {% csrf_token %}
+              <select name="child">
+                {% for child in children %}
+                  <option value="{{ child.pk }}">{{ child.display_name }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit">Claim</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td class="muted">No bounties posted yet.</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Post a bounty</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Post</button>
+  </form>
+{% endblock %}

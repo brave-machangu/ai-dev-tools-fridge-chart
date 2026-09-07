@@ -6,7 +6,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .models import ChoreAssignment, Profile, monday_of
+from .forms import BountyForm
+from .models import Chore, ChoreAssignment, Profile, monday_of
 
 
 def parent_profile(user):
@@ -164,3 +165,81 @@ def child_ledger(request, pk):
         'entries': entries,
         'balance': child.balance,
     })
+
+
+@login_required
+def bounties(request):
+    """The bounty board: open one-off tasks, and a form to post a new one."""
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    family = profile.family
+    if request.method == 'POST':
+        form = BountyForm(request.POST, family=family)
+        if form.is_valid():
+            bounty = form.save()
+            messages.success(
+                request, f'Posted {bounty.title} for {bounty.points} points.'
+            )
+            return redirect('chores:bounties')
+    else:
+        form = BountyForm(family=family)
+
+    board = [
+        {'bounty': bounty, 'assignment': bounty.assignments.first()}
+        for bounty in family.chores.filter(kind=Chore.Kind.BOUNTY)
+    ]
+
+    return render(request, 'chores/bounties.html', {
+        'family': family,
+        'form': form,
+        'board': board,
+        'children': family.children,
+    })
+
+
+@login_required
+@require_POST
+def claim_bounty(request, pk):
+    """Hand a bounty to the child who claimed it, for the current week.
+
+    It becomes an ordinary assignment from here, so it goes through the same
+    parent approval as any routine chore before points are credited.
+    """
+    profile = parent_profile(request.user)
+    if profile is None:
+        return redirect('chores:home')
+
+    bounty = get_object_or_404(
+        Chore,
+        pk=pk,
+        family=profile.family,
+        kind=Chore.Kind.BOUNTY,
+    )
+    child = get_object_or_404(
+        Profile,
+        pk=request.POST.get('child'),
+        family=profile.family,
+        role=Profile.Role.CHILD,
+    )
+
+    week_start = monday_of(datetime.date.today())
+    assignment, created = ChoreAssignment.objects.get_or_create(
+        chore=bounty,
+        week_start=week_start,
+        defaults={'child': child},
+    )
+    if created:
+        messages.success(
+            request,
+            f'{child.display_name} claimed {bounty.title}. '
+            f'Approve it once the work is done.',
+        )
+    else:
+        messages.info(
+            request,
+            f'{bounty.title} is already claimed by {assignment.child.display_name}.',
+        )
+
+    return redirect('chores:bounties')
