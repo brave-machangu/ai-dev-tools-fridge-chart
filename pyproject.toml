@@ -12,6 +12,10 @@ dependencies = [
     "reportlab>=5.0.1",
 ]
 
+# Only needed to run against PostgreSQL: uv sync --extra postgres
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.2"]
+
 # Not a distributable package: the Django project lives at the repository root,
 # so uv only manages dependencies here.
 [tool.uv]
