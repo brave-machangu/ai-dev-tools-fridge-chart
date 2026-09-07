@@ -1,6 +1,6 @@
 # Scope: what ships in the MVP
 
-The MVP is the whole loop from [`_docs/plan.md`](_docs/plan.md): chores rotate
+The MVP is the whole loop from [`_docs/plan.md`](../plan.md): chores rotate
 weekly, a parent approves them, points accrue, bounties get claimed, rewards get
 spent, and the week prints as a chart for the fridge.
 

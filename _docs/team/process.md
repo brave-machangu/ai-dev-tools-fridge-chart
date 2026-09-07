@@ -2,9 +2,9 @@
 
 Spec → backlog → issues → code → proof → commit.
 
-1. **Spec.** [`_docs/plan.md`](_docs/plan.md) is what the product should do.
+1. **Spec.** [`_docs/plan.md`](../plan.md) is what the product should do.
    It changes rarely, and only deliberately.
-2. **Backlog.** [`backlog.md`](backlog.md) breaks the spec into numbered tasks,
+2. **Backlog.** [`backlog.md`](../../backlog.md) breaks the spec into numbered tasks,
    ordered so nothing depends on a later one, each small enough for one sitting
    and each carrying a **Done when** check.
 3. **Issues.** Every task is a GitHub issue with the same number, written to the

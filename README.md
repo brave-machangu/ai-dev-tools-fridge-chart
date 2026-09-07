@@ -87,9 +87,9 @@ All eleven tasks in [`backlog.md`](backlog.md) are done and their
 
 [`_docs/plan.md`](_docs/plan.md) is the spec, [`backlog.md`](backlog.md) breaks
 it into numbered tasks, and each task is a GitHub issue with the same number.
-Issues are labelled `MVP` or `post-MVP`; [`pm.md`](pm.md) says what is in each
-and why. [`process.md`](process.md) describes how a task goes from spec to
-commit, and [`task-template.md`](task-template.md) is the shape an issue takes.
+Issues are labelled `MVP` or `post-MVP`; [`pm.md`](_docs/team/pm.md) says what is in each
+and why. [`process.md`](_docs/team/process.md) describes how a task goes from spec to
+commit, and [`task-template.md`](_docs/team/task-template.md) is the shape an issue takes.
 
 ## Not ready for production
 
