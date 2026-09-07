@@ -1,7 +1,7 @@
 [project]
 name = "ai-dev-tools-homework"
 version = "0.1.0"
-description = "Add your description here"
+description = "Family chore and reward manager"
 readme = "README.md"
 authors = [
     { name = "Matipa Brave Machangu", email = "325657687+brave-machangu@users.noreply.github.com" }
@@ -12,9 +12,7 @@ dependencies = [
     "reportlab>=5.0.1",
 ]
 
-[project.scripts]
-ai-dev-tools-homework = "ai_dev_tools_homework:main"
-
-[build-system]
-requires = ["uv_build>=0.12.10,<0.13.0"]
-build-backend = "uv_build"
+# Not a distributable package: the Django project lives at the repository root,
+# so uv only manages dependencies here.
+[tool.uv]
+package = false
