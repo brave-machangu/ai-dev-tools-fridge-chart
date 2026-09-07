@@ -27,7 +27,7 @@ parent-only and makes its primary output a piece of paper.
 | Backend | Django (Python) |
 | Database | SQLite (dev) / PostgreSQL (prod) via the Django ORM |
 | Frontend | Django templates (HTML/CSS), minimal JavaScript |
-| PDF | WeasyPrint or ReportLab (not built yet) |
+| PDF | ReportLab |
 
 ## Data model (preview)
 
@@ -77,7 +77,8 @@ get claimed, and rewards get spent — the whole loop from
 | Balances and ledger | per-child totals and a full audit trail |
 | Bounty board | post a bounty, claim it, approve it |
 | Reward redemption | spend points, never below zero |
+| Fridge chart | the week as a one-page PDF, ready to print |
+| Reminders | Friday to approve, Sunday to print; silent otherwise |
 
-Still open: the printable weekly PDF chart and the Friday/Sunday reminders.
-Progress is tracked as [GitHub issues](../../issues), one per task in
-[`backlog.md`](backlog.md).
+All eleven tasks in [`backlog.md`](backlog.md) are done and their
+[GitHub issues](../../issues) closed.
