@@ -44,8 +44,8 @@ uv run python manage.py createsuperuser  # a parent who can reach /admin/
 uv run python manage.py runserver        # http://127.0.0.1:8000/
 ```
 
-Create a family, a parent profile linked to your user, and the children in
-`/admin/`, then generate a week of chores:
+Sign in and the app walks you through creating the family, its children, the
+recurring chores and the rewards. Then generate a week of chores:
 
 ```
 uv run python manage.py generate_week
@@ -102,4 +102,3 @@ The MVP runs, but it is set up for a laptop, not a household on the internet:
 - no automated tests — every rule was verified by hand ([#12](../../issues/12))
 - reminders need SMTP settings and a daily schedule — see
   [`_docs/deployment.md`](_docs/deployment.md)
-- a parent needs a Django superuser to set up their family ([#17](../../issues/17))

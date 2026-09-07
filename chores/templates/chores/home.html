@@ -1,33 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}{% if family %}{{ family.name }}{% else %}Home{% endif %}{% endblock %}
+{% block title %}{{ family.name }}{% endblock %}
 
 {% block content %}
-  {% if family %}
-    <h1>{{ family.name }}</h1>
-    <p class="muted">Managed by {{ profile.display_name }}.</p>
-    <p><a href="{% url 'chores:week' %}">Review this week's chores</a></p>
+  <h1>{{ family.name }}</h1>
+  <p class="muted">Managed by {{ profile.display_name }}.</p>
+  <p><a href="{% url 'chores:week' %}">Review this week's chores</a></p>
 
-    <h2>Parents</h2>
-    <ul>
-      {% for parent in parents %}
-        <li>{{ parent.display_name }}</li>
-      {% endfor %}
-    </ul>
+  <h2>Parents</h2>
+  <ul>
+    {% for parent in parents %}
+      <li>{{ parent.display_name }}</li>
+    {% endfor %}
+  </ul>
 
-    <h2>Children</h2>
-    <ul>
-      {% for child in children %}
-        <li>{{ child.display_name }}</li>
-      {% empty %}
-        <li class="muted">No children yet.</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <h1>No family yet</h1>
-    <p class="muted">
-      This account is not linked to a family profile.
-      Create a family and a parent profile in the <a href="/admin/">admin</a>.
-    </p>
-  {% endif %}
+  <h2>Children</h2>
+  <ul>
+    {% for child in children %}
+      <li>{{ child.display_name }}</li>
+    {% empty %}
+      <li class="muted">
+        No children yet &mdash; <a href="{% url 'chores:setup' %}">add them</a>.
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}

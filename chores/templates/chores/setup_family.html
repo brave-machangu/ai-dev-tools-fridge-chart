@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Set up your family{% endblock %}
+
+{% block content %}
+  <h1>Set up your family</h1>
+  <p class="muted">
+    This account is not part of a family yet. Name it and yourself to get started.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create</button>
+  </form>
+{% endblock %}

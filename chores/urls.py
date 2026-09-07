@@ -6,6 +6,7 @@ app_name = 'chores'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('setup/', views.setup, name='setup'),
     path('week/', views.week, name='week'),
     path('week/chart.pdf', views.week_pdf, name='week_pdf'),
     path(

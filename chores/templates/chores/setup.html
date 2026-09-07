@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Set up {{ family.name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ family.name }}</h1>
+  <p class="muted">Add the children, the recurring chores, and what points can buy.</p>
+
+  <h2>Children</h2>
+  <ul>
+    {% for child in children %}
+      <li>{{ child.display_name }}</li>
+    {% empty %}
+      <li class="muted">None yet. Chores cannot rotate without them.</li>
+    {% endfor %}
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="form" value="child">
+    {{ child_form.as_p }}
+    <button type="submit">Add child</button>
+  </form>
+
+  <h2>Routine chores</h2>
+  <ul>
+    {% for chore in routines %}
+      <li>{{ chore.title }} &mdash; {{ chore.points }} pts</li>
+    {% empty %}
+      <li class="muted">None yet.</li>
+    {% endfor %}
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="form" value="chore">
+    {{ chore_form.as_p }}
+    <button type="submit">Add chore</button>
+  </form>
+
+  <h2>Rewards</h2>
+  <ul>
+    {% for reward in rewards %}
+      <li>{{ reward.name }} &mdash; {{ reward.cost }} pts</li>
+    {% empty %}
+      <li class="muted">None yet.</li>
+    {% endfor %}
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="form" value="reward">
+    {{ reward_form.as_p }}
+    <button type="submit">Add reward</button>
+  </form>
+
+  <h2>Next</h2>
+  <p>
+    Generate the week's rotation with
+    <code>uv run python manage.py generate_week</code>, then
+    <a href="{% url 'chores:week' %}">review the week</a>.
+  </p>
+{% endblock %}

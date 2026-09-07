@@ -7,7 +7,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import BountyForm
+from .forms import (
+    BountyForm, ChildForm, FamilySetupForm, RewardForm, RoutineChoreForm,
+)
 from .pdf import build_week_chart
 from .models import Chore, ChoreAssignment, Profile, Reward, monday_of
 
@@ -42,13 +44,16 @@ def home(request):
     gets a page -- it just tells them to create their family in the admin.
     """
     profile = parent_profile(request.user)
-    family = profile.family if profile else None
+    if profile is None:
+        return redirect('chores:setup')
+
+    family = profile.family
 
     return render(request, 'chores/home.html', {
         'profile': profile,
         'family': family,
-        'parents': family.parents if family else [],
-        'children': family.children if family else [],
+        'parents': family.parents,
+        'children': family.children,
     })
 
 
@@ -337,3 +342,62 @@ def week_pdf(request):
         f'attachment; filename="chores-{week_start}.pdf"'
     )
     return response
+
+
+@login_required
+def setup(request):
+    """First run: create the family, or add to it once it exists.
+
+    Everything a parent needs to get from an empty database to a printable
+    week, without going near the Django admin.
+    """
+    profile = parent_profile(request.user)
+
+    if profile is None:
+        if request.method == 'POST':
+            form = FamilySetupForm(request.POST)
+            if form.is_valid():
+                family = form.create_for(request.user)
+                messages.success(request, f'Created {family.name}. Now add the children.')
+                return redirect('chores:setup')
+        else:
+            form = FamilySetupForm()
+        return render(request, 'chores/setup_family.html', {'form': form})
+
+    family = profile.family
+    forms = {
+        'child': ChildForm(family=family),
+        'chore': RoutineChoreForm(family=family),
+        'reward': RewardForm(family=family),
+    }
+
+    if request.method == 'POST':
+        which = request.POST.get('form')
+        if which == 'child':
+            forms['child'] = ChildForm(request.POST, family=family)
+            if forms['child'].is_valid():
+                child = forms['child'].save()
+                messages.success(request, f'Added {child.display_name}.')
+                return redirect('chores:setup')
+        elif which == 'chore':
+            forms['chore'] = RoutineChoreForm(request.POST, family=family)
+            if forms['chore'].is_valid():
+                chore = forms['chore'].save()
+                messages.success(request, f'Added {chore.title}.')
+                return redirect('chores:setup')
+        elif which == 'reward':
+            forms['reward'] = RewardForm(request.POST, family=family)
+            if forms['reward'].is_valid():
+                reward = forms['reward'].save()
+                messages.success(request, f'Added {reward.name}.')
+                return redirect('chores:setup')
+
+    return render(request, 'chores/setup.html', {
+        'family': family,
+        'children': family.children,
+        'routines': family.chores.filter(kind=Chore.Kind.ROUTINE),
+        'rewards': family.rewards.all(),
+        'child_form': forms['child'],
+        'chore_form': forms['chore'],
+        'reward_form': forms['reward'],
+    })
